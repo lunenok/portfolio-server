@@ -1,13 +1,14 @@
 const express = require('express')
 const path = require('path')
 const app = express()
-const port = 3001
+const httpsPort = 3001
+const httpPort = 3002
 const https = require('https')
 const fs = require('fs')
 
-const privateKey = fs.readFileSync('./ssl/server.key', 'utf-8')
-const cert = fs.readFileSync('./ssl/server.crt', 'utf-8')
-const httpsOptions = {privateKey: privateKey, cert: cert}
+const privateKey = fs.readFileSync(path.join(__dirname, 'ssl', 'ca-key.pem'))
+const cert = fs.readFileSync(path.join(__dirname, 'ssl', 'ca-cert.pem'))
+const httpsOptions = {key: privateKey, cert: cert}
 
 app.use(express.static(path.join(__dirname, 'public')))
 
@@ -16,5 +17,5 @@ app.get('/', (req, res) => {
 })
 
 var httpsServer = https.createServer(httpsOptions, app)
-httpsServer.listen(port)
-
+httpsServer.listen(httpsPort)
+app.listen(httpPort)
